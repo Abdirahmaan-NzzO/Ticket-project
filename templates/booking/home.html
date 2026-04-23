@@ -1,0 +1,18 @@
+<!-- 1. Tell Django to use our base layout -->
+{% extends 'base.html' %}
+
+<!-- 2. Set the title of the page -->
+{% block title %}My Booking Home{% endblock %}
+
+<!-- 3. Put your page's actual content inside this block -->
+{% block content %}
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto mt-10">
+        <h2 class="text-3xl font-bold text-blue-600 mb-4">Hello, Tailwind!</h2>
+        <p class="text-gray-700 text-lg">
+            This page is perfectly styled using Tailwind CSS classes without writing any custom CSS.
+        </p>
+        <button class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">
+            Book Now
+        </button>
+    </div>
+{% endblock %}
