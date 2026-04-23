@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Booking App{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional: Add a custom font or basic styles if needed */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-900; /* basic tailwind classes applied via tailwind CDN */
+        }
+    </style>
+    <!-- Enable Tailwind arbitrary values and base styling via script if required -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Simple Navigation -->
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="font-bold text-xl tracking-tight">TravelBook</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition">Home</a>
+                        <!-- Add other links here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}
+        <!-- Default content if block is not overridden -->
+        <div class="text-center py-20">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Welcome to TravelBook</h1>
+            <p class="text-lg text-gray-600">Start building your awesome booking application!</p>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- Simple Footer -->
+    <footer class="bg-white border-t py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; 2026 TravelBook. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
