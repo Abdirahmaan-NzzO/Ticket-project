@@ -65,27 +65,23 @@
                     <h3 class="font-semibold text-gray-800 mb-3 text-sm">Departure Time</h3>
                     <div class="space-y-2">
                         <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
-                            <input type="checkbox" name="time_filter" value="morning"
-                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'morning'
-                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            <!-- prettier-ignore -->
+                            <input type="checkbox" name="time_filter" value="morning" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'morning' in selected_times %}checked{% endif %} onchange="this.form.submit()">
                             Morning (6 AM - 12 PM)
                         </label>
                         <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
-                            <input type="checkbox" name="time_filter" value="afternoon"
-                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'afternoon'
-                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            <!-- prettier-ignore -->
+                            <input type="checkbox" name="time_filter" value="afternoon" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'afternoon' in selected_times %}checked{% endif %} onchange="this.form.submit()">
                             Afternoon (12 PM - 6 PM)
                         </label>
                         <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
-                            <input type="checkbox" name="time_filter" value="evening"
-                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'evening'
-                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            <!-- prettier-ignore -->
+                            <input type="checkbox" name="time_filter" value="evening" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'evening' in selected_times %}checked{% endif %} onchange="this.form.submit()">
                             Evening (6 PM - 12 AM)
                         </label>
                         <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
-                            <input type="checkbox" name="time_filter" value="night"
-                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'night' in
-                                selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            <!-- prettier-ignore -->
+                            <input type="checkbox" name="time_filter" value="night" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'night' in selected_times %}checked{% endif %} onchange="this.form.submit()">
                             Night (12 AM - 6 AM)
                         </label>
                     </div>
@@ -97,9 +93,8 @@
                     <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
                         {% for operator in operators %}
                         <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
-                            <input type="checkbox" name="operator_filter" value="{{ operator.id }}"
-                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if operator.id
-                                in selected_operators %}checked{% endif %} onchange="this.form.submit()">
+                            <!-- prettier-ignore -->
+                            <input type="checkbox" name="operator_filter" value="{{ operator.id }}" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if operator.id in selected_operators %}checked{% endif %} onchange="this.form.submit()">
                             {{ operator.name }}
                         </label>
                         {% endfor %}
