@@ -14,6 +14,8 @@ class Booking(models.Model):
     seats = models.ManyToManyField(Seat)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    contact_email = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
     booking_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -33,3 +35,17 @@ class Booking(models.Model):
         self.seats.add(*seat_list)
         self.total_amount = self.trip.price * len(seat_list)
         self.save()
+
+class Passenger(models.Model):
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='passengers')
+    seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    age = models.PositiveIntegerField()
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+
+    def __str__(self):
+        return f"{self.name} ({self.seat.seat_number})"

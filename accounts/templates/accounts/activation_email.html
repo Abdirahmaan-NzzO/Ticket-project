@@ -1,0 +1,9 @@
+Auto-Submitted: auto-generated
+{% autoescape off %}
+Welcome to TravelBook!
+
+Please click the link below to verify your email address and activate your account:
+http://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
+
+If you did not register for an account, please ignore this email.
+{% endautoescape %}

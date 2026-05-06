@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - TravelBook{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <!-- Header -->
+    <div class="bg-white rounded-t-2xl shadow-sm border-b border-gray-100 p-8 flex items-center space-x-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        <div class="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 text-4xl font-bold shadow-inner">
+            {{ user.username|make_list|first|upper }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ user.get_full_name|default:user.username }}</h1>
+            <p class="text-gray-500 mt-1 flex items-center">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                {{ user.email }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="bg-white rounded-b-2xl shadow-md p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Left Column: Menu/Stats -->
+        <div class="col-span-1 space-y-6">
+            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Account Menu</h3>
+                <nav class="space-y-2">
+                    <a href="#" class="block px-4 py-2.5 bg-blue-50 text-blue-700 font-medium rounded-lg">Profile Details</a>
+                    <a href="#" class="block px-4 py-2.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition">My Bookings</a>
+                    <a href="#" class="block px-4 py-2.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition">Settings</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Right Column: Edit Form -->
+        <div class="col-span-1 md:col-span-2">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Update Profile Information</h2>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 rounded-lg mb-2 text-sm {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'accounts:profile' %}" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- User Base Info Fields -->
+                    {% for field in user_form %}
+                    <div class="col-span-1 {% if field.name == 'email' %}md:col-span-2{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="mt-1 text-xs text-red-500 font-medium">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <!-- Profile Specific Fields -->
+                    {% for field in profile_form %}
+                    <div class="col-span-1 {% if field.name == 'address' %}md:col-span-2{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="mt-1 text-xs text-red-500 font-medium">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="pt-4 border-t border-gray-100 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm hover:shadow">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('input:not([type="hidden"]), textarea');
+        inputs.forEach(input => {
+            input.classList.add('block', 'w-full', 'px-4', 'py-2.5', 'rounded-lg', 'border-gray-300', 'bg-gray-50', 'border', 'focus:border-blue-500', 'focus:bg-white', 'focus:ring-2', 'focus:ring-blue-200', 'outline-none', 'transition-colors', 'duration-200');
+            
+            // Textareas might need slightly different styling
+            if(input.tagName === 'TEXTAREA') {
+                input.setAttribute('rows', '4');
+            }
+        });
+    });
+</script>
+{% endblock %}
