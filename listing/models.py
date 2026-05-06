@@ -48,8 +48,8 @@ class Trip(models.Model):
         return f"{self.route} at {self.departure_time.strftime('%Y-%m-%d %H:%M')}"
 
     def get_booked_seats(self):
-        """Returns a list of seats that are already booked and confirmed for this trip."""
-        return Seat.objects.filter(booking__trip=self, booking__status='CONFIRMED')
+        """Returns a list of seats that are already booked (either pending or confirmed) for this trip."""
+        return Seat.objects.filter(booking__trip=self, booking__status__in=['CONFIRMED', 'PENDING'])
 
     def get_available_seats(self):
         """Returns all seats on the bus that are not yet booked for this trip."""
@@ -58,4 +58,4 @@ class Trip(models.Model):
 
     def is_seat_available(self, seat):
         """Checks if a specific seat is available for this trip."""
-        return not self.booking_set.filter(status='CONFIRMED', seats=seat).exists()
+        return not self.booking_set.filter(status__in=['CONFIRMED', 'PENDING'], seats=seat).exists()

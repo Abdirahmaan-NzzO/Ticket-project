@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - TravelBook{% endblock %}
+
+{% block content %}
+<!-- Top Modify Search Bar -->
+<div class="bg-white shadow-sm border-b border-gray-200 py-4 -mt-4 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <form action="{% url 'listing:search' %}" method="GET" class="flex flex-col md:flex-row gap-4 items-center">
+            <div class="flex-1 flex w-full">
+                <input type="text" name="origin" value="{{ search_origin }}" placeholder="From"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <div class="bg-gray-100 border-t border-b border-gray-300 px-3 flex items-center">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                </div>
+                <input type="text" name="destination" value="{{ search_destination }}" placeholder="To"
+                    class="w-full px-4 py-2 border-t border-b border-r border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <input type="date" name="date" value="{{ search_date }}"
+                    class="w-full px-4 py-2 border-t border-b border-r border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            </div>
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-r-lg md:rounded-lg w-full md:w-auto whitespace-nowrap">
+                Modify Search
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Title -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">
+            {% if search_origin and search_destination %}
+            {{ search_origin }} to {{ search_destination }}
+            {% else %}
+            All Available Buses
+            {% endif %}
+        </h1>
+        <p class="text-gray-500 text-sm mt-1">{{ trips|length }} buses found</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Left Sidebar: Filters -->
+        <div class="w-full lg:w-64 flex-shrink-0">
+            <form id="filter-form" action="{% url 'listing:search' %}" method="GET"
+                class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 sticky top-6">
+                <!-- Preserve search params -->
+                <input type="hidden" name="origin" value="{{ search_origin }}">
+                <input type="hidden" name="destination" value="{{ search_destination }}">
+                <input type="hidden" name="date" value="{{ search_date }}">
+
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-bold text-gray-900 uppercase tracking-wide text-sm">Filters</h2>
+                    <a href="{% url 'listing:search' %}?origin={{ search_origin }}&destination={{ search_destination }}&date={{ search_date }}"
+                        class="text-xs text-blue-600 hover:underline">Clear All</a>
+                </div>
+
+                <!-- Departure Time Filter -->
+                <div class="mb-6 border-t border-gray-100 pt-4">
+                    <h3 class="font-semibold text-gray-800 mb-3 text-sm">Departure Time</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <input type="checkbox" name="time_filter" value="morning"
+                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'morning'
+                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            Morning (6 AM - 12 PM)
+                        </label>
+                        <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <input type="checkbox" name="time_filter" value="afternoon"
+                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'afternoon'
+                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            Afternoon (12 PM - 6 PM)
+                        </label>
+                        <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <input type="checkbox" name="time_filter" value="evening"
+                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'evening'
+                                in selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            Evening (6 PM - 12 AM)
+                        </label>
+                        <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <input type="checkbox" name="time_filter" value="night"
+                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if 'night' in
+                                selected_times %}checked{% endif %} onchange="this.form.submit()">
+                            Night (12 AM - 6 AM)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bus Operator Filter -->
+                <div class="border-t border-gray-100 pt-4">
+                    <h3 class="font-semibold text-gray-800 mb-3 text-sm">Bus Operators</h3>
+                    <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        {% for operator in operators %}
+                        <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <input type="checkbox" name="operator_filter" value="{{ operator.id }}"
+                                class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500" {% if operator.id
+                                in selected_operators %}checked{% endif %} onchange="this.form.submit()">
+                            {{ operator.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Content: Bus List -->
+        <div class="flex-1 space-y-4">
+            {% if trips %}
+            {% for trip in trips %}
+            <!-- RedBus Style Trip Card -->
+            <div
+                class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative group">
+                <div class="p-5">
+                    <div class="flex flex-col md:flex-row justify-between gap-6">
+
+                        <!-- Operator & Bus Type -->
+                        <div class="w-full md:w-1/4">
+                            <h3 class="font-bold text-gray-900 text-lg">{{ trip.bus.operator.name }}</h3>
+                            <p class="text-xs text-gray-500 mt-1">A/C Seater (2+2)</p>
+                            <!-- Hardcoded bus type for visual purposes -->
+                            <div class="flex items-center mt-2">
+                                <span
+                                    class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded flex items-center">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                        </path>
+                                    </svg>
+                                    4.5
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Journey Times -->
+                        <div class="w-full md:w-2/4 flex justify-between items-center px-4">
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-gray-900">{{ trip.departure_time|time:"H:i" }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ trip.route.origin }}</p>
+                            </div>
+
+                            <div class="flex-1 px-4 text-center">
+                                <p class="text-xs text-gray-400 mb-1">
+                                    {% if trip.arrival_time > trip.departure_time %}
+                                    {{ trip.departure_time|timeuntil:trip.arrival_time }}
+                                    {% else %}
+                                    Overnight
+                                    {% endif %}
+                                </p>
+                                <div class="h-px w-full bg-gray-300 relative">
+                                    <div class="absolute inset-x-0 -top-1.5 flex justify-between">
+                                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-left">
+                                <p class="text-xl font-bold text-gray-900">{{ trip.arrival_time|time:"H:i" }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ trip.route.destination }}</p>
+                                {% if trip.arrival_time.date > trip.departure_time.date %}
+                                <p class="text-xs text-red-500 font-medium">Next Day</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Price & Action -->
+                        <div class="w-full md:w-1/4 text-right flex flex-col justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Starting from</p>
+                                <p class="text-2xl font-extrabold text-gray-900">INR {{ trip.price }}</p>
+                                <!-- Simulating RedBus INR -->
+                            </div>
+                            <div class="mt-4">
+                                {% if trip.available_seats_count > 0 %}
+                                <a href="{% url 'listing:trip_detail' trip.id %}"
+                                    class="before:absolute before:inset-0 inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded transition duration-200 text-sm shadow-sm">
+                                    VIEW SEATS
+                                </a>
+                                <p class="text-xs text-gray-500 mt-2">{{ trip.available_seats_count }} Seats available
+                                </p>
+                                {% else %}
+                                <button disabled
+                                    class="bg-gray-300 text-gray-600 font-bold py-2 px-6 rounded cursor-not-allowed text-sm">
+                                    SOLD OUT
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <img src="https://st.redbus.in/Images/busstops/empty_bus.png" alt="No buses"
+                    class="mx-auto h-32 mb-4 opacity-50">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Oops! No buses found.</h3>
+                <p class="text-gray-500">We couldn't find any buses for this route on the selected date.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
