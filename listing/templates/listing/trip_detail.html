@@ -8,19 +8,19 @@
     <!-- Top Bar with Back Button -->
     <div class="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
         <div class="flex items-center gap-4">
-            <a href="javascript:history.back()" class="flex items-center justify-center w-10 h-10 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-red-600 hover:border-red-600 hover:shadow-md transition-all">
+            <a href="javascript:history.back()" class="flex items-center justify-center w-10 h-10 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-blue-600 hover:border-blue-600 hover:shadow-md transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </a>
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     {{ trip.route.origin }} 
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg> 
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg> 
                     {{ trip.route.destination }}
                 </h1>
                 <p class="text-sm text-gray-500 font-medium mt-1">{{ trip.departure_time|date:"D, d M Y" }} &bull; {{ trip.bus.operator.name }} &bull; {{ trip.bus.registration_number }}</p>
             </div>
         </div>
-        <div class="hidden sm:flex text-sm font-bold px-4 py-2 bg-red-50 text-red-700 rounded-lg border border-red-100 uppercase tracking-wide">
+        <div class="hidden sm:flex text-sm font-bold px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 uppercase tracking-wide">
             Select Seats
         </div>
     </div>
@@ -45,7 +45,7 @@
                         <div class="w-6 h-6 rounded bg-gray-200 border border-gray-300 relative overflow-hidden">
                             <!-- Strike through line for booked -->
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-full h-[1.5px] bg-gray-400 rotate-45 transform"></div>
+                                <div class="w-full h-[1.5px] bg-zinc-600 rotate-45 transform"></div>
                             </div>
                         </div> 
                         <span class="text-sm font-semibold text-gray-700">Booked</span>
@@ -61,15 +61,15 @@
                             <!-- Steering wheel indicator -->
                             <div class="absolute top-6 right-8 flex items-center justify-center">
                                 <div class="w-10 h-10 border-[3px] border-gray-400 rounded-full flex items-center justify-center opacity-60">
-                                    <div class="w-1 h-full bg-gray-400 rounded"></div>
-                                    <div class="h-1 w-full bg-gray-400 rounded absolute"></div>
+                                    <div class="w-1 h-full bg-zinc-600 rounded"></div>
+                                    <div class="h-1 w-full bg-zinc-600 rounded absolute"></div>
                                 </div>
                             </div>
                             
                             <!-- Divider line -->
                             <div class="w-full border-b-[3px] border-gray-300 border-dotted mt-16 mb-8 opacity-50"></div>
                             
-                            <h4 class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Lower Deck</h4>
+                            <h4 class="text-center text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Lower Deck</h4>
                             
                             <div class="grid grid-cols-4 gap-y-4 gap-x-2 justify-items-center">
                                 {% for data in seat_data %}
@@ -87,13 +87,13 @@
                                             for="seat-{{ data.seat.id }}" 
                                             class="flex flex-col items-center justify-center w-full h-full rounded-t-lg rounded-b border-[1.5px] text-xs font-bold cursor-pointer transition-all duration-200 relative overflow-hidden
                                             {% if data.is_booked %}
-                                                bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed
+                                                bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed
                                             {% else %}
-                                                bg-white border-gray-400 text-gray-700 hover:border-red-500 peer-checked:bg-green-500 peer-checked:border-green-600 peer-checked:text-white peer-checked:shadow-md
+                                                bg-white border-gray-400 text-gray-700 hover:border-blue-500 peer-checked:bg-green-500 peer-checked:border-green-600 peer-checked:text-white peer-checked:shadow-md
                                             {% endif %}"
                                         >
                                             <!-- Top headrest visual -->
-                                            <div class="absolute top-0 w-full h-2.5 bg-black opacity-[0.08]"></div>
+                                            <div class="absolute top-0 w-full h-2.5 bg-white opacity-[0.08]"></div>
                                             
                                             <span class="mt-2 z-10">{{ data.seat.seat_number }}</span>
                                             
@@ -127,7 +127,7 @@
                         
                         <!-- Boarding -->
                         <div class="flex items-start gap-5 z-10 relative">
-                            <div class="w-6 h-6 rounded-full bg-gray-800 border-4 border-white shadow-sm flex-shrink-0 mt-0.5"></div>
+                            <div class="w-6 h-6 rounded-full bg-gray-200 border-4 border-white shadow-sm flex-shrink-0 mt-0.5"></div>
                             <div>
                                 <div class="flex items-baseline gap-2">
                                     <p class="text-xl font-bold text-gray-900">{{ trip.departure_time|time:"H:i" }}</p>
@@ -159,7 +159,7 @@
                         <span class="text-xs font-bold bg-gray-100 text-gray-600 py-1 px-2.5 rounded-md" id="seat-count">0</span>
                     </div>
                     <div id="selected-seats-list" class="flex flex-wrap gap-2 min-h-[44px] p-3 bg-gray-50 rounded-lg border border-gray-200 mb-4">
-                        <span class="text-gray-400 text-sm font-medium italic flex items-center justify-center w-full h-full">No seat selected</span>
+                        <span class="text-gray-500 text-sm font-medium italic flex items-center justify-center w-full h-full">No seat selected</span>
                     </div>
                     
                     <div class="flex justify-between items-center text-sm mb-2">
@@ -170,14 +170,14 @@
 
                 <div class="flex justify-between items-end mb-6 pt-4 border-t border-gray-200">
                     <span class="text-lg font-bold text-gray-900">Total Amount</span>
-                    <span class="text-3xl font-extrabold text-red-600" id="total-amount">₹ 0</span>
+                    <span class="text-3xl font-extrabold text-blue-600" id="total-amount">₹ 0</span>
                 </div>
 
                 <button 
                     type="button" 
                     id="submit-booking-btn"
                     onclick="document.getElementById('booking-form').submit();"
-                    class="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-4 px-4 rounded-xl transition duration-300 shadow-[0_4px_14px_0_rgba(220,38,38,0.39)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.23)] hover:-translate-y-0.5 disabled:hover:translate-y-0 disabled:shadow-none disabled:hover:shadow-none focus:outline-none focus:ring-4 focus:ring-red-300 uppercase tracking-wide"
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-4 px-4 rounded-xl transition duration-300 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5 disabled:hover:translate-y-0 disabled:shadow-none disabled:hover:shadow-none focus:outline-none focus:ring-4 focus:ring-blue-300 uppercase tracking-wide"
                     disabled
                 >
                     Continue
@@ -202,7 +202,7 @@
         seatCountEl.innerText = checkboxes.length;
         
         if (checkboxes.length === 0) {
-            selectedSeatsList.innerHTML = '<span class="text-gray-400 text-sm font-medium italic flex items-center justify-center w-full h-full">No seat selected</span>';
+            selectedSeatsList.innerHTML = '<span class="text-gray-500 text-sm font-medium italic flex items-center justify-center w-full h-full">No seat selected</span>';
             submitBtn.disabled = true;
         } else {
             checkboxes.forEach(cb => {
