@@ -31,12 +31,12 @@
 </style>
 
 <!-- ========== BLUE SEARCH BAR ========== -->
-<div class="search-bar-bg -mt-8 py-5 px-4 shadow-lg">
+<div class="search-bar-bg -mt-8 py-5 px-4 shadow-lg rounded-b-3xl">
     <div class="max-w-6xl mx-auto">
         <form action="{% url 'listing:search' %}" method="GET" class="flex flex-col md:flex-row items-center gap-3">
             <div class="flex flex-1 w-full bg-white rounded-lg overflow-hidden shadow-md">
                 <div class="relative flex-1">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-width="2" d="M12 8v4"/></svg>
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-width="2" d="M12 8v4"/></svg>
                     <input type="text" name="origin" value="{{ search_origin }}" placeholder="From City"
                         class="w-full pl-10 pr-4 py-3.5 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none border-r border-gray-200">
                 </div>
@@ -44,12 +44,12 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 </button>
                 <div class="relative flex-1">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <input type="text" name="destination" value="{{ search_destination }}" placeholder="To City"
                         class="w-full pl-10 pr-4 py-3.5 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none border-r border-gray-200">
                 </div>
                 <div class="relative flex-1">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><path stroke-width="2" d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><path stroke-width="2" d="M16 2v4M8 2v4M3 10h18"/></svg>
                     <input type="date" name="date" value="{{ search_date }}"
                         class="w-full pl-10 pr-4 py-3.5 text-sm font-medium text-gray-800 focus:outline-none">
                 </div>
@@ -82,7 +82,7 @@
 <!-- ========== SORT BAR ========== -->
 <div class="max-w-6xl mx-auto px-4 mb-4 hidden lg:block">
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 px-6 py-3 flex items-center gap-6 text-sm font-semibold text-gray-500">
-        <span class="text-gray-400 text-xs uppercase tracking-wider mr-2">Sort by:</span>
+        <span class="text-gray-500 text-xs uppercase tracking-wider mr-2">Sort by:</span>
         <button class="sort-btn pb-1 border-b-2 border-transparent hover:text-blue-600">Departure</button>
         <button class="sort-btn pb-1 border-b-2 border-transparent hover:text-blue-600">Duration</button>
         <button class="sort-btn pb-1 border-b-2 border-transparent hover:text-blue-600">Arrival</button>
@@ -161,23 +161,23 @@
         <div class="flex-1 space-y-4">
             {% if trips %}
             {% for trip in trips %}
-            <div class="bus-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in" style="animation-delay: calc({{ forloop.counter0 }} * 100ms);">
+            <div class="bus-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in relative cursor-pointer" style="animation-delay: calc({{ forloop.counter0 }} * 100ms);">
                 <div class="p-5 md:p-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
 
                         <!-- Operator Info -->
                         <div class="md:w-[22%]">
                             <h3 class="font-bold text-gray-900 text-base leading-tight">{{ trip.bus.operator.name }}</h3>
-                            <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                            <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 19v2M17 19v2"/></svg>
                                 A/C Seater (2+2)
                             </p>
                             <div class="flex items-center gap-2 mt-2">
-                                <span class="rating-badge text-white text-xs font-bold px-2 py-0.5 rounded flex items-center gap-0.5">
+                                <span class="rating-badge text-gray-900 text-xs font-bold px-2 py-0.5 rounded flex items-center gap-0.5">
                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                     4.5
                                 </span>
-                                <span class="text-xs text-gray-400">120 ratings</span>
+                                <span class="text-xs text-gray-500">120 ratings</span>
                             </div>
                         </div>
 
@@ -189,7 +189,7 @@
                             </div>
 
                             <div class="flex-1 flex flex-col items-center px-2">
-                                <p class="text-[11px] text-gray-400 font-medium mb-1.5">
+                                <p class="text-[11px] text-gray-500 font-medium mb-1.5">
                                     {% if trip.arrival_time > trip.departure_time %}
                                     {{ trip.departure_time|timeuntil:trip.arrival_time }}
                                     {% else %}
@@ -215,7 +215,7 @@
                         <!-- Price & CTA -->
                         <div class="md:w-[25%] flex flex-col items-end text-right">
                             <div class="price-tag rounded-lg px-4 py-2 mb-2">
-                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Starts from</p>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Starts from</p>
                                 <p class="text-2xl font-black text-gray-900">₹{{ trip.price }}</p>
                             </div>
                             {% if trip.available_seats_count > 0 %}
@@ -237,7 +237,7 @@
 
                 <!-- Amenities Strip -->
                 <div class="border-t border-gray-100 px-5 md:px-6 py-2.5 flex items-center justify-between bg-gray-50/50">
-                    <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <div class="flex items-center gap-4 text-xs text-gray-500">
                         <span class="flex items-center gap-1" title="Live Tracking">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/></svg>
                             Tracking
