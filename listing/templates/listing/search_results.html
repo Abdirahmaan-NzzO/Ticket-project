@@ -161,8 +161,10 @@
         <div class="flex-1 space-y-4">
             {% if trips %}
             {% for trip in trips %}
-            <div class="bus-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in relative cursor-pointer" style="animation-delay: calc({{ forloop.counter0 }} * 100ms);">
-                <div class="p-5 md:p-6">
+            <div class="bus-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in relative cursor-pointer group" style="animation-delay: calc({{ forloop.counter0 }} * 100ms);">
+                <!-- Full card clickable link -->
+                <a href="{% url 'listing:trip_detail' trip.id %}" class="absolute inset-0 z-0"></a>
+                <div class="p-5 md:p-6 relative z-10 pointer-events-none">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
 
                         <!-- Operator Info -->
@@ -220,7 +222,7 @@
                             </div>
                             {% if trip.available_seats_count > 0 %}
                             <a href="{% url 'listing:trip_detail' trip.id %}"
-                                class="before:absolute before:inset-0 view-seats-btn inline-block text-white font-bold py-2.5 px-7 rounded-lg text-sm shadow-md tracking-wide">
+                                class="view-seats-btn relative z-20 pointer-events-auto inline-block text-white font-bold py-2.5 px-7 rounded-lg text-sm shadow-md tracking-wide">
                                 SHOW SEATS
                             </a>
                             <p class="text-xs mt-1.5 font-medium {% if trip.available_seats_count <= 5 %}text-blue-500 pulse-seats{% else %}text-green-600{% endif %}">
