@@ -16,7 +16,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['phone_number', 'address']
+        fields = ['phone_number', 'address', 'profile_photo']
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:

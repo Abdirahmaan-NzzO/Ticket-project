@@ -7,8 +7,20 @@
     <!-- Header -->
     <div class="bg-white rounded-t-2xl shadow-sm border-b border-gray-100 p-8 flex items-center space-x-6 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-        <div class="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 text-4xl font-bold shadow-inner">
-            {{ user.username|make_list|first|upper }}
+        <div class="relative group flex-shrink-0">
+            <div class="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 text-4xl font-bold shadow-inner overflow-hidden border-2 border-white">
+                <img src="{% if user.profile.profile_photo %}{{ user.profile.profile_photo.url }}{% endif %}" alt="Profile Photo" id="avatar-preview" class="h-full w-full object-cover {% if not user.profile.profile_photo %}hidden{% endif %}">
+                <span id="avatar-initial" class="{% if user.profile.profile_photo %}hidden{% endif %}">
+                    {{ user.username|make_list|first|upper }}
+                </span>
+            </div>
+            
+            <!-- Pencil icon overlay -->
+            <label for="{{ profile_form.profile_photo.id_for_label }}" id="avatar-upload-label" class="absolute bottom-0 right-0 bg-white rounded-full p-1.5 shadow-md border border-gray-200 cursor-pointer hidden text-gray-500 hover:text-blue-600 transition-colors z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+            </label>
         </div>
         <div>
             <h1 class="text-3xl font-bold text-gray-900">{{ user.get_full_name|default:user.username }}</h1>
@@ -48,7 +60,7 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{% url 'accounts:profile' %}" class="space-y-6">
+            <form method="POST" action="{% url 'accounts:profile' %}" enctype="multipart/form-data" class="space-y-6">
                 {% csrf_token %}
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -70,7 +82,7 @@
 
                     <!-- Profile Specific Fields -->
                     {% for field in profile_form %}
-                    <div class="col-span-1 {% if field.name == 'address' %}md:col-span-2{% endif %}">
+                    <div class="col-span-1 {% if field.name == 'address' %}md:col-span-2{% endif %} {% if field.name == 'profile_photo' %}hidden{% endif %}">
                         <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                             {{ field.label }}
                         </label>
@@ -85,8 +97,11 @@
                     {% endfor %}
                 </div>
                 
-                <div class="pt-4 border-t border-gray-100 flex justify-end">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm hover:shadow">
+                <div class="pt-4 border-t border-gray-100 flex justify-end space-x-3">
+                    <button type="button" id="edit-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm hover:shadow">
+                        Edit Profile
+                    </button>
+                    <button type="submit" id="save-btn" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm hover:shadow">
                         Save Changes
                     </button>
                 </div>
@@ -97,15 +112,88 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const inputs = document.querySelectorAll('input:not([type="hidden"]), textarea');
+        const inputs = document.querySelectorAll('input:not([type="hidden"]), textarea, select');
+        const editBtn = document.getElementById('edit-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const avatarUploadLabel = document.getElementById('avatar-upload-label');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarInitial = document.getElementById('avatar-initial');
+        const fileInput = document.getElementById('{{ profile_form.profile_photo.id_for_label }}');
+        
+        // Initial state: disable all inputs and style them
         inputs.forEach(input => {
-            input.classList.add('block', 'w-full', 'px-4', 'py-2.5', 'rounded-lg', 'border-gray-300', 'bg-gray-50', 'border', 'focus:border-blue-500', 'focus:bg-white', 'focus:ring-2', 'focus:ring-blue-200', 'outline-none', 'transition-colors', 'duration-200');
-            
-            // Textareas might need slightly different styling
+            // style
+            if(input.type !== 'file' && input.type !== 'checkbox' && input.type !== 'radio') {
+                input.classList.add('block', 'w-full', 'px-4', 'py-2.5', 'rounded-lg', 'border-gray-300', 'bg-gray-50', 'border', 'focus:border-blue-500', 'focus:bg-white', 'focus:ring-2', 'focus:ring-blue-200', 'outline-none', 'transition-colors', 'duration-200');
+            }
             if(input.tagName === 'TEXTAREA') {
                 input.setAttribute('rows', '4');
             }
+            
+            // disable
+            input.setAttribute('disabled', 'disabled');
+            if (input.classList.contains('bg-gray-50')) {
+                input.classList.add('opacity-70', 'cursor-not-allowed');
+            }
+            if (input.type === 'file' || input.type === 'checkbox') {
+                const parent = input.closest('div');
+                if (parent) {
+                    parent.classList.add('opacity-50', 'pointer-events-none');
+                }
+            }
         });
+
+        // Edit button click handler
+        if(editBtn) {
+            editBtn.addEventListener('click', function() {
+                // Enable all inputs
+                inputs.forEach(input => {
+                    input.removeAttribute('disabled');
+                    input.classList.remove('opacity-70', 'cursor-not-allowed');
+                });
+                
+                // Show avatar upload label
+                if(avatarUploadLabel) avatarUploadLabel.classList.remove('hidden');
+                
+                // Toggle buttons
+                editBtn.classList.add('hidden');
+                saveBtn.classList.remove('hidden');
+                
+                // Focus on first input
+                if(inputs.length > 0) {
+                    inputs[0].focus();
+                }
+            });
+        }
+
+        // Image preview
+        if(fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                if(e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if(avatarPreview) {
+                            avatarPreview.src = e.target.result;
+                            avatarPreview.classList.remove('hidden');
+                        }
+                        if(avatarInitial) {
+                            avatarInitial.classList.add('hidden');
+                        }
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+        
+        // The form should remove 'disabled' attributes before submit (just in case browser restricts it, though Save button is only visible when enabled)
+        const form = document.querySelector('form');
+        if(form) {
+            form.addEventListener('submit', function() {
+                inputs.forEach(input => {
+                    input.removeAttribute('disabled');
+                });
+            });
+        }
     });
 </script>
 {% endblock %}
