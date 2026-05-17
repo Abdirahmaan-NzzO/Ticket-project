@@ -164,13 +164,13 @@
                     
                     <div class="flex justify-between items-center text-sm mb-2">
                         <span class="text-gray-600 font-medium">Fare per seat</span>
-                        <span class="font-bold text-gray-900" id="seat-price" data-price="{{ trip.price }}">₹ {{ trip.price }}</span>
+                        <span class="font-bold text-gray-900" id="seat-price" data-price="{{ trip.price }}">$ {{ trip.price }}</span>
                     </div>
                 </div>
 
                 <div class="flex justify-between items-end mb-6 pt-4 border-t border-gray-200">
                     <span class="text-lg font-bold text-gray-900">Total Amount</span>
-                    <span class="text-3xl font-extrabold text-blue-600" id="total-amount">₹ 0</span>
+                    <span class="text-3xl font-extrabold text-blue-600" id="total-amount">$ 0</span>
                 </div>
 
                 <button 
@@ -216,8 +216,8 @@
             submitBtn.disabled = false;
         }
         
-        // Format with INR
-        totalAmountEl.innerText = '₹ ' + total.toFixed(0); // Using toFixed(0) for cleaner look usually used by redbus
+        // Format with USD
+        totalAmountEl.innerText = '$ ' + total.toFixed(0); // Using toFixed(0) for cleaner look usually used by redbus
     }
 </script>
 {% endblock %}

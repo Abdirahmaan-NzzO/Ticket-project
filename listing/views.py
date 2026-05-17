@@ -9,8 +9,9 @@ def trip_search_view(request):
     date_str = request.GET.get('date', '')
     time_filter = request.GET.getlist('time_filter') # e.g. ['morning', 'afternoon']
     operator_filter = request.GET.getlist('operator_filter') # e.g. ['1', '3']
+    sort_by = request.GET.get('sort_by', 'departure_time')
 
-    trips = Trip.objects.filter(departure_time__gte=timezone.now()).order_by('departure_time')
+    trips = Trip.objects.filter(departure_time__gte=timezone.now())
 
     if origin:
         trips = trips.filter(route__origin__icontains=origin)
@@ -38,20 +39,34 @@ def trip_search_view(request):
         trips = trips.filter(bus__operator__id__in=operator_filter)
 
     # Calculate available seats for display
-    for trip in trips:
+    trips_list = list(trips)
+    for trip in trips_list:
         trip.available_seats_count = trip.get_available_seats().count()
+
+    # Apply sorting
+    if sort_by == 'price':
+        trips_list.sort(key=lambda x: x.price)
+    elif sort_by == 'duration':
+        trips_list.sort(key=lambda x: (x.arrival_time - x.departure_time))
+    elif sort_by == 'arrival_time':
+        trips_list.sort(key=lambda x: x.arrival_time)
+    elif sort_by == 'seats':
+        trips_list.sort(key=lambda x: x.available_seats_count, reverse=True)
+    else: # departure_time
+        trips_list.sort(key=lambda x: x.departure_time)
 
     origins = Route.objects.values_list('origin', flat=True).distinct()
     destinations = Route.objects.values_list('destination', flat=True).distinct()
     operators = BusOperator.objects.all()
 
     context = {
-        'trips': trips,
+        'trips': trips_list,
         'search_origin': origin,
         'search_destination': destination,
         'search_date': date_str,
         'selected_times': time_filter,
         'selected_operators': [int(o) for o in operator_filter if o.isdigit()],
+        'sort_by': sort_by,
         'origins': origins,
         'destinations': destinations,
         'operators': operators,

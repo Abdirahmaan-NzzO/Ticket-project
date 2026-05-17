@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BusOperator, Bus, Route, Seat, Trip
+from .models import BusOperator, Bus, Route, Seat, Trip, Amenity
 
 @admin.register(BusOperator)
 class BusOperatorAdmin(admin.ModelAdmin):
@@ -8,12 +8,18 @@ class BusOperatorAdmin(admin.ModelAdmin):
     search_fields = ('name', 'contact_email')
     date_hierarchy = 'created_at'
 
+@admin.register(Amenity)
+class AmenityAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
 @admin.register(Bus)
 class BusAdmin(admin.ModelAdmin):
-    list_display = ('registration_number', 'operator', 'capacity')
-    list_filter = ('operator',)
+    list_display = ('registration_number', 'operator', 'capacity', 'bus_type')
+    list_filter = ('operator', 'bus_type')
     search_fields = ('registration_number',)
     autocomplete_fields = ('operator',)
+    filter_horizontal = ('amenities',)
 
 @admin.register(Route)
 class RouteAdmin(admin.ModelAdmin):

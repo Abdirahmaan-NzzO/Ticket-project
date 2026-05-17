@@ -9,10 +9,22 @@ class BusOperator(models.Model):
     def __str__(self):
         return self.name
 
+class Amenity(models.Model):
+    name = models.CharField(max_length=50)
+    icon_svg = models.TextField(help_text="SVG code for the icon", blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Amenities"
+
+    def __str__(self):
+        return self.name
+
 class Bus(models.Model):
     operator = models.ForeignKey(BusOperator, on_delete=models.CASCADE, related_name='buses')
     registration_number = models.CharField(max_length=50, unique=True)
     capacity = models.PositiveIntegerField()
+    bus_type = models.CharField(max_length=50, default="A/C Seater (2+2)")
+    amenities = models.ManyToManyField(Amenity, blank=True)
 
     class Meta:
         verbose_name_plural = "Buses"
