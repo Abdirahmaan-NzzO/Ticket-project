@@ -52,9 +52,12 @@ def passenger_details_view(request, trip_id):
     
     if request.method == 'POST':
         contact_email = request.POST.get('contact_email')
-        contact_phone = request.POST.get('contact_phone')
+        contact_phone_raw = request.POST.get('contact_phone_raw')
+        country_code = request.POST.get('country_code', '+252')
         
-        if not contact_email or not contact_phone:
+        contact_phone = f"{country_code} {contact_phone_raw}" if contact_phone_raw else ""
+        
+        if not contact_email or not contact_phone_raw:
             messages.error(request, "Please provide contact details.")
             return render(request, 'booking/passenger_details.html', {'trip': trip, 'seats': seats})
             
