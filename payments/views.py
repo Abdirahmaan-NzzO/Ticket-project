@@ -14,6 +14,23 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def create_checkout_session(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     
+    stripe_secret = getattr(settings, 'STRIPE_SECRET_KEY', None)
+    stripe_public = getattr(settings, 'STRIPE_PUBLISHABLE_KEY', None)
+    
+    is_placeholder = (
+        not stripe_secret or stripe_secret.strip() == "" or "placeholder" in stripe_secret.lower() or "..." in stripe_secret or
+        not stripe_public or stripe_public.strip() == "" or "placeholder" in stripe_public.lower() or "..." in stripe_public
+    )
+    
+    if is_placeholder:
+        if settings.DEBUG:
+            return render(request, 'payments/mock_checkout.html', {
+                'booking': booking,
+                'publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', None)
+            })
+        else:
+            return HttpResponse("Error: Stripe Secret Key is not configured in settings/environment.", status=500)
+            
     domain_url = request.build_absolute_uri('/')[:-1]
     
     try:
@@ -39,6 +56,29 @@ def create_checkout_session(request, booking_id):
         return redirect(checkout_session.url, code=303)
     except Exception as e:
         return HttpResponse(f"Error: {str(e)}")
+
+@login_required
+def mock_confirm_payment(request, booking_id):
+    if not settings.DEBUG:
+        return HttpResponse("Action not allowed in production.", status=403)
+        
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    # Update booking status
+    booking.status = 'CONFIRMED'
+    booking.save()
+    
+    # Create the payment record
+    Payment.objects.create(
+        booking=booking,
+        amount=booking.total_amount,
+        transaction_id=f'mock_txn_{booking.id}_{request.user.id}',
+        payment_method='Stripe (Mock)',
+        status='COMPLETED'
+    )
+    
+    return redirect('payments:success')
+
 
 def payment_success(request):
     return render(request, 'payments/success.html')
@@ -83,8 +123,44 @@ def stripe_webhook(request):
                     transaction_id=session.get('payment_intent'),
                     payment_method='Stripe',
                     status='COMPLETED'
+
                 )
             except Booking.DoesNotExist:
                 pass
                 
     return HttpResponse(status=200)
+
+@login_required
+def choose_payment_method(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'payments/choose_payment.html', {'booking': booking})
+
+@login_required
+def local_payment(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    if request.method == 'POST':
+        sender_number = request.POST.get('sender_number', '')
+        sender_name = request.POST.get('sender_name', '')
+        transaction_id = request.POST.get('transaction_id', f'local_{booking.id}_{request.user.id}')
+        payment_provider = request.POST.get('payment_provider', 'Mobile Money')
+        
+        Payment.objects.create(
+            booking=booking,
+            amount=booking.total_amount,
+            transaction_id=transaction_id,
+            payment_method=payment_provider,
+            status='PENDING',
+            sender_number=sender_number,
+            sender_name=sender_name
+        )
+        booking.status = 'PENDING'
+        booking.save()
+        return redirect('payments:local_success', booking_id=booking.id)
+        
+    return render(request, 'payments/local_payment.html', {'booking': booking})
+
+@login_required
+def local_success(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'payments/local_success.html', {'booking': booking})

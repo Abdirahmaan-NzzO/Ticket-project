@@ -14,5 +14,8 @@ class Payment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     payment_date = models.DateTimeField(auto_now_add=True)
 
+    sender_number = models.CharField(max_length=50, null=True, blank=True)
+    sender_name = models.CharField(max_length=100, null=True, blank=True)
+
     def __str__(self):
         return f"Payment for Booking #{self.booking.id}"

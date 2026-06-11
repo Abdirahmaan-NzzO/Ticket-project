@@ -97,7 +97,7 @@ def passenger_details_view(request, trip_id):
             del request.session['selected_seats']
             
         messages.success(request, "Your booking has been placed successfully! Redirecting to payment...")
-        return redirect('payments:create_checkout_session', booking_id=booking.id)
+        return redirect('payments:choose_payment_method', booking_id=booking.id)
         
     return render(request, 'booking/passenger_details.html', {'trip': trip, 'seats': seats})
 

@@ -15,10 +15,11 @@ class AmenityAdmin(admin.ModelAdmin):
 
 @admin.register(Bus)
 class BusAdmin(admin.ModelAdmin):
-    list_display = ('registration_number', 'operator', 'capacity', 'bus_type')
+    list_display = ('registration_number', 'operator', 'driver', 'capacity', 'bus_type')
     list_filter = ('operator', 'bus_type')
     search_fields = ('registration_number',)
     autocomplete_fields = ('operator',)
+    raw_id_fields = ('driver',)
     filter_horizontal = ('amenities',)
 
 @admin.register(Route)
@@ -35,8 +36,8 @@ class SeatAdmin(admin.ModelAdmin):
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
-    list_display = ('route', 'bus', 'departure_time', 'arrival_time', 'price')
-    list_filter = ('route', 'departure_time', 'bus')
+    list_display = ('route', 'bus', 'departure_time', 'status', 'arrival_time', 'price')
+    list_filter = ('status', 'route', 'departure_time', 'bus')
     search_fields = ('route__origin', 'route__destination', 'bus__registration_number')
     date_hierarchy = 'departure_time'
     autocomplete_fields = ('route', 'bus')

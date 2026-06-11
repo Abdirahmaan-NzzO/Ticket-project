@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'listing',
     'payments',
     'reviews',
+    'driver',
 ]
 
 MIDDLEWARE = [

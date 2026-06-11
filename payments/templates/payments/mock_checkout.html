@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Mock Checkout Portal - SafarTicket{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 px-4">
+    <!-- Main Card -->
+    <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all duration-300">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-8 text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0))]"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white uppercase tracking-wider backdrop-blur-md">
+                        Simulation Mode
+                    </span>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight">Secure Payment Gateway</h1>
+                <p class="text-blue-100/90 text-sm mt-1">Completing your booking securely in local environment</p>
+            </div>
+        </div>
+
+        <div class="p-8 space-y-6">
+            <!-- Developer Info Box -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-2xl">
+                <div class="flex gap-3">
+                    <svg class="h-6 w-6 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-bold text-amber-800">Developer Information</h3>
+                        <div class="mt-1 text-xs text-amber-700 space-y-1">
+                            <p>You are seeing this simulated checkout because Stripe is not configured or is set with placeholder values.</p>
+                            <p class="font-semibold mt-1">To connect real Stripe payments, add the following to your root <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-[11px] text-amber-900">.env</code> file:</p>
+                            <pre class="bg-amber-900/5 p-2 rounded font-mono text-[10px] text-amber-900 mt-1 select-all">STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="bg-gray-50/70 rounded-2xl p-6 border border-gray-100 space-y-4">
+                <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Booking Summary #{{ booking.id }}
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <!-- Route -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
+                        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Route Details</div>
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <p class="font-bold text-gray-900">{{ booking.trip.route.origin }}</p>
+                                <p class="text-xs text-gray-400">Origin</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                            <div>
+                                <p class="font-bold text-gray-900">{{ booking.trip.route.destination }}</p>
+                                <p class="text-xs text-gray-400">Destination</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
+                        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Schedule</div>
+                        <p class="font-bold text-gray-900">{{ booking.trip.departure_time|date:"DATETIME_FORMAT" }}</p>
+                        <p class="text-xs text-gray-400">Departure Time</p>
+                    </div>
+
+                    <!-- Seats -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
+                        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Seats Reserved</div>
+                        <p class="font-bold text-gray-900">
+                            {% for seat in booking.seats.all %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100 mr-1">
+                                    {{ seat.seat_number }}
+                                </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
+                        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact Details</div>
+                        <p class="font-bold text-gray-900">{{ booking.contact_email }}</p>
+                        <p class="text-xs text-gray-400">{{ booking.contact_phone }}</p>
+                    </div>
+                </div>
+
+                <!-- Passengers list -->
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2 text-sm">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Passengers</div>
+                    <ul class="divide-y divide-gray-100">
+                        {% for passenger in booking.passengers.all %}
+                        <li class="py-2 flex justify-between items-center">
+                            <span class="font-medium text-gray-800">{{ passenger.name }}</span>
+                            <span class="text-xs text-gray-400">Age: {{ passenger.age }} | Gender: {{ passenger.get_gender_display }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Price & Payment Buttons -->
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100">
+                <div>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Amount to Pay</span>
+                    <p class="text-3xl font-black text-gray-900">${{ booking.total_amount }}</p>
+                </div>
+
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <!-- Cancel Button -->
+                    <a href="{% url 'payments:cancel' %}" 
+                       class="flex-1 sm:flex-initial text-center px-6 py-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition duration-200">
+                        Cancel
+                    </a>
+                    
+                    <!-- Confirm Button -->
+                    <form action="{% url 'payments:mock_confirm_payment' booking.id %}" method="POST" class="flex-1 sm:flex-initial">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition duration-200 text-center">
+                            Confirm Mock Payment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -41,11 +41,17 @@ class Passenger(models.Model):
         ('M', 'Male'),
         ('F', 'Female'),
     )
+    BOARDING_STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('BOARDED', 'Boarded'),
+        ('NO_SHOW', 'No Show'),
+    )
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='passengers')
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    boarding_status = models.CharField(max_length=20, choices=BOARDING_STATUS_CHOICES, default='PENDING')
 
     def __str__(self):
         return f"{self.name} ({self.seat.seat_number})"
