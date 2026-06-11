@@ -65,6 +65,10 @@
                         <div class="w-px h-6 bg-gray-200 mx-2"></div> <!-- Divider -->
 
                         {% if user.is_authenticated %}
+                        {% if user.driver_profile %}
+                        <a href="{% url 'driver:dashboard' %}"
+                            class="px-4 py-2 rounded-full text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Driver Panel</a>
+                        {% endif %}
                         <a href="{% url 'booking:my_bookings' %}"
                             class="px-4 py-2 rounded-full text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">My
                             Bookings</a>
@@ -109,6 +113,10 @@
                 <div class="h-px bg-gray-100 my-4"></div>
 
                 {% if user.is_authenticated %}
+                {% if user.driver_profile %}
+                <a href="{% url 'driver:dashboard' %}"
+                    class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-800 hover:text-blue-600 hover:bg-blue-50 transition-colors">Driver Panel</a>
+                {% endif %}
                 <a href="{% url 'booking:my_bookings' %}"
                     class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-800 hover:text-blue-600 hover:bg-blue-50 transition-colors">My
                     Bookings</a>

@@ -25,9 +25,16 @@ class Bus(models.Model):
     capacity = models.PositiveIntegerField()
     bus_type = models.CharField(max_length=50, default="A/C Seater (2+2)")
     amenities = models.ManyToManyField(Amenity, blank=True)
+    driver = models.ForeignKey('driver.DriverProfile', on_delete=models.SET_NULL, null=True, blank=True, related_name='buses')
 
     class Meta:
         verbose_name_plural = "Buses"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        super().clean()
+        if self.driver and self.driver.operator and self.driver.operator != self.operator:
+            raise ValidationError("The assigned driver must belong to the same Bus Operator.")
 
     def __str__(self):
         return f"{self.registration_number} ({self.operator.name})"
@@ -50,11 +57,20 @@ class Seat(models.Model):
         return f"Seat {self.seat_number} on {self.bus.registration_number}"
 
 class Trip(models.Model):
+    TRIP_STATUS_CHOICES = (
+        ('SCHEDULED', 'Scheduled'),
+        ('STARTED', 'Started'),
+        ('COMPLETED', 'Completed'),
+        ('DELAYED', 'Delayed'),
+    )
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='trips')
     route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name='trips')
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=TRIP_STATUS_CHOICES, default='SCHEDULED')
+    delay_minutes = models.PositiveIntegerField(default=0)
+    delay_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.route} at {self.departure_time.strftime('%Y-%m-%d %H:%M')}"

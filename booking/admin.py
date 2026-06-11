@@ -5,6 +5,7 @@ class PassengerInline(admin.TabularInline):
     model = Passenger
     extra = 0
     raw_id_fields = ('seat',)
+    fields = ('name', 'age', 'gender', 'seat', 'boarding_status')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
@@ -17,7 +18,7 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(Passenger)
 class PassengerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'age', 'gender', 'booking', 'seat')
-    list_filter = ('gender',)
+    list_display = ('name', 'age', 'gender', 'booking', 'seat', 'boarding_status')
+    list_filter = ('gender', 'boarding_status')
     search_fields = ('name', 'booking__user__username')
     raw_id_fields = ('booking', 'seat')
