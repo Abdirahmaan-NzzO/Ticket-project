@@ -17,6 +17,14 @@ class DriverProfile(models.Model):
     photo = models.ImageField(upload_to='driver_photos/', blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE')
 
+    def get_average_rating(self):
+        from django.db.models import Avg
+        avg = self.reviews.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 0.0
+
+    def get_review_count(self):
+        return self.reviews.count()
+
     def __str__(self):
         return f"Driver: {self.user.get_full_name() or self.user.username} ({self.license_number})"
 

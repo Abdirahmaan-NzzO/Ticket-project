@@ -3,8 +3,7 @@ from .models import Review
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('user', 'trip', 'rating', 'created_at')
-    list_filter = ('rating', 'created_at')
-    search_fields = ('user__username', 'trip__route__origin', 'trip__route__destination')
-    date_hierarchy = 'created_at'
-    autocomplete_fields = ('user', 'trip')
+    list_display = ('booking', 'driver', 'bus', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at', 'driver', 'bus')
+    search_fields = ('booking__id', 'driver__user__username', 'bus__registration_number', 'comment')
+    autocomplete_fields = ('booking', 'driver', 'bus')

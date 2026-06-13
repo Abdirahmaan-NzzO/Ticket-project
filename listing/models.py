@@ -36,6 +36,14 @@ class Bus(models.Model):
         if self.driver and self.driver.operator and self.driver.operator != self.operator:
             raise ValidationError("The assigned driver must belong to the same Bus Operator.")
 
+    def get_average_rating(self):
+        from django.db.models import Avg
+        avg = self.reviews.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 0.0
+
+    def get_review_count(self):
+        return self.reviews.count()
+
     def __str__(self):
         return f"{self.registration_number} ({self.operator.name})"
 
