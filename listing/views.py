@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
 from .models import Trip, Route, BusOperator
+from reviews.models import Review
 
 def trip_search_view(request):
     origin = request.GET.get('origin', '')
@@ -88,9 +89,14 @@ def trip_detail_view(request, pk):
             'is_booked': seat.id in booked_seat_ids
         })
         
+    driver_reviews = trip.bus.driver.reviews.all().order_by('-created_at') if trip.bus.driver else []
+    bus_reviews = trip.bus.reviews.all().order_by('-created_at')
+
     context = {
         'trip': trip,
         'seat_data': seat_data,
         'available_count': trip.get_available_seats().count(),
+        'driver_reviews': driver_reviews,
+        'bus_reviews': bus_reviews,
     }
     return render(request, 'listing/trip_detail.html', context)
