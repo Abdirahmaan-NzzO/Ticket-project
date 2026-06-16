@@ -36,6 +36,17 @@ class Booking(models.Model):
         self.total_amount = self.trip.price * len(seat_list)
         self.save()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        payment = getattr(self, 'payment', None)
+        if payment:
+            if self.status == 'CONFIRMED' and payment.status != 'COMPLETED':
+                payment.status = 'COMPLETED'
+                payment.save(update_fields=['status'])
+            elif self.status == 'CANCELLED' and payment.status != 'FAILED':
+                payment.status = 'FAILED'
+                payment.save(update_fields=['status'])
+
 class Passenger(models.Model):
     GENDER_CHOICES = (
         ('M', 'Male'),

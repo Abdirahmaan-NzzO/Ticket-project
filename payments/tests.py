@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from booking.models import Booking
 from listing.models import BusOperator, Bus, Route, Seat, Trip
+from .models import Payment
 
 class PaymentsTests(TestCase):
     def setUp(self):
@@ -52,3 +53,40 @@ class PaymentsTests(TestCase):
         response = self.client.get(reverse('payments:create_checkout_session', args=[self.booking.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'payments/mock_checkout.html')
+
+    def test_payment_completed_syncs_booking_confirmed(self):
+        payment = Payment.objects.create(
+            booking=self.booking,
+            amount=self.booking.total_amount,
+            payment_method='Mobile Money',
+            status='PENDING'
+        )
+        payment.status = 'COMPLETED'
+        payment.save()
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, 'CONFIRMED')
+
+    def test_booking_confirmed_syncs_payment_completed(self):
+        payment = Payment.objects.create(
+            booking=self.booking,
+            amount=self.booking.total_amount,
+            payment_method='Mobile Money',
+            status='PENDING'
+        )
+        self.booking.status = 'CONFIRMED'
+        self.booking.save()
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, 'COMPLETED')
+
+    def test_payment_failed_syncs_booking_cancelled(self):
+        payment = Payment.objects.create(
+            booking=self.booking,
+            amount=self.booking.total_amount,
+            payment_method='Mobile Money',
+            status='PENDING'
+        )
+        payment.status = 'FAILED'
+        payment.save()
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, 'CANCELLED')
+

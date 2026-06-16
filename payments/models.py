@@ -19,3 +19,13 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment for Booking #{self.booking.id}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.status == 'COMPLETED' and self.booking.status != 'CONFIRMED':
+            self.booking.status = 'CONFIRMED'
+            self.booking.save(update_fields=['status'])
+        elif self.status == 'FAILED' and self.booking.status != 'CANCELLED':
+            self.booking.status = 'CANCELLED'
+            self.booking.save(update_fields=['status'])
+
