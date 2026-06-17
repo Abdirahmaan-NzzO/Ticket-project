@@ -76,7 +76,7 @@
                         <span class="text-gray-500 text-sm block">Total Paid</span>
                         <span class="text-xl font-extrabold text-blue-600">USD {{ booking.total_amount }}</span>
                     </div>
-                    {% if booking.status == 'CONFIRMED' and booking.trip.status == 'COMPLETED' %}
+                    {% if booking.can_be_reviewed %}
                         <a href="{% url 'reviews:create_review' booking.id %}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-2 px-4 rounded-lg text-sm transition">
                             Leave a Review
                         </a>

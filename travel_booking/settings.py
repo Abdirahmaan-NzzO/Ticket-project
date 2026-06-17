@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'payments',
     'reviews',
     'driver',
+    'system_admin',
 ]
 
 MIDDLEWARE = [

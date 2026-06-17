@@ -47,6 +47,17 @@ class Booking(models.Model):
                 payment.status = 'FAILED'
                 payment.save(update_fields=['status'])
 
+    @property
+    def can_be_reviewed(self):
+        from django.utils import timezone
+        if self.status != 'CONFIRMED':
+            return False
+        if hasattr(self, 'review'):
+            return False
+        if not self.trip.bus.driver:
+            return False
+        return self.trip.status == 'COMPLETED' or self.trip.arrival_time <= timezone.now()
+
 class Passenger(models.Model):
     GENDER_CHOICES = (
         ('M', 'Male'),
