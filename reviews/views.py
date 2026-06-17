@@ -22,13 +22,13 @@ def create_review(request, booking_id):
         messages.error(request, "You can only review trips that have been completed.")
         return redirect('booking:my_bookings')
 
+    if not booking.trip.bus.driver:
+        messages.error(request, "No driver is assigned to this bus. Cannot leave review.")
+        return redirect('booking:my_bookings')
+
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
-            if not booking.trip.bus.driver:
-                messages.error(request, "No driver is assigned to this bus. Cannot leave review.")
-                return redirect('booking:my_bookings')
-                
             review = form.save(commit=False)
             review.booking = booking
             review.bus = booking.trip.bus

@@ -65,6 +65,13 @@
                         <div class="w-px h-6 bg-gray-200 mx-2"></div> <!-- Divider -->
 
                         {% if user.is_authenticated %}
+                        {% if user.is_superuser or user.is_staff or user.profile.role == 'ADMIN' %}
+                        <a href="{% url 'system_admin:dashboard' %}"
+                            class="px-4 py-2 rounded-full text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-blue-600/30 transition-all duration-200 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>
+                            Admin Panel
+                        </a>
+                        {% endif %}
                         {% if user.driver_profile %}
                         <a href="{% url 'driver:dashboard' %}"
                             class="px-4 py-2 rounded-full text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Driver Panel</a>
@@ -113,6 +120,10 @@
                 <div class="h-px bg-gray-100 my-4"></div>
 
                 {% if user.is_authenticated %}
+                {% if user.is_superuser or user.is_staff or user.profile.role == 'ADMIN' %}
+                <a href="{% url 'system_admin:dashboard' %}"
+                    class="block px-4 py-3 rounded-xl text-base font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">⚙ Admin Panel</a>
+                {% endif %}
                 {% if user.driver_profile %}
                 <a href="{% url 'driver:dashboard' %}"
                     class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-800 hover:text-blue-600 hover:bg-blue-50 transition-colors">Driver Panel</a>

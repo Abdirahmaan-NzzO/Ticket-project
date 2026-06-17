@@ -90,3 +90,61 @@ class PaymentsTests(TestCase):
         self.booking.refresh_from_db()
         self.assertEqual(self.booking.status, 'CANCELLED')
 
+    from unittest.mock import patch
+
+    @patch('stripe.checkout.Session.retrieve')
+    def test_payment_success_with_session_id_confirms_booking(self, mock_retrieve):
+        from unittest.mock import MagicMock
+        mock_session = MagicMock()
+        mock_session.client_reference_id = str(self.booking.id)
+        mock_session.payment_intent = 'pi_test_12345'
+        mock_retrieve.return_value = mock_session
+        
+        self.client.login(username='paymentuser', password='password123')
+        
+        # Initially booking status is PENDING and no Payment exists
+        self.assertEqual(self.booking.status, 'PENDING')
+        self.assertFalse(Payment.objects.filter(booking=self.booking).exists())
+        
+        response = self.client.get(reverse('payments:success') + '?session_id=cs_test_abc')
+        self.assertEqual(response.status_code, 200)
+        
+        # Booking should be updated to CONFIRMED
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, 'CONFIRMED')
+        
+        # Payment object should be created
+        payment = Payment.objects.get(booking=self.booking)
+        self.assertEqual(payment.amount, self.booking.total_amount)
+        self.assertEqual(payment.payment_method, 'Stripe')
+        self.assertEqual(payment.status, 'COMPLETED')
+        self.assertEqual(payment.transaction_id, 'pi_test_12345')
+
+    @patch('stripe.checkout.Session.retrieve')
+    def test_payment_success_with_session_id_idempotent(self, mock_retrieve):
+        from unittest.mock import MagicMock
+        mock_session = MagicMock()
+        mock_session.client_reference_id = str(self.booking.id)
+        mock_session.payment_intent = 'pi_test_12345'
+        mock_retrieve.return_value = mock_session
+
+        self.client.login(username='paymentuser', password='password123')
+        
+        # Create an existing payment
+        Payment.objects.create(
+            booking=self.booking,
+            amount=self.booking.total_amount,
+            transaction_id='pi_test_12345',
+            payment_method='Stripe',
+            status='COMPLETED'
+        )
+        self.booking.status = 'CONFIRMED'
+        self.booking.save()
+        
+        response = self.client.get(reverse('payments:success') + '?session_id=cs_test_abc')
+        self.assertEqual(response.status_code, 200)
+        
+        # Confirm that no duplicate payment object is created
+        self.assertEqual(Payment.objects.filter(booking=self.booking).count(), 1)
+
+

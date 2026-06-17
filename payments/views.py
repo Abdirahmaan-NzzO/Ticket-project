@@ -81,6 +81,29 @@ def mock_confirm_payment(request, booking_id):
 
 
 def payment_success(request):
+    session_id = request.GET.get('session_id')
+    if session_id:
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+            booking_id = getattr(session, 'client_reference_id', None)
+            if booking_id:
+                booking = Booking.objects.get(id=booking_id)
+                # Check if a payment already exists for this booking to prevent duplicate confirmation
+                if not Payment.objects.filter(booking=booking).exists():
+                    booking.status = 'CONFIRMED'
+                    booking.save()
+                    
+                    Payment.objects.create(
+                        booking=booking,
+                        amount=booking.total_amount,
+                        transaction_id=getattr(session, 'payment_intent', None) or session_id,
+                        payment_method='Stripe',
+                        status='COMPLETED'
+                    )
+        except Exception:
+            # Silently fallback to rendering success template if API call fails (e.g. invalid test session id)
+            pass
+            
     return render(request, 'payments/success.html')
 
 def payment_cancel(request):
@@ -110,7 +133,7 @@ def stripe_webhook(request):
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         
-        booking_id = session.get('client_reference_id')
+        booking_id = getattr(session, 'client_reference_id', None)
         if booking_id:
             try:
                 booking = Booking.objects.get(id=booking_id)
@@ -120,10 +143,9 @@ def stripe_webhook(request):
                 Payment.objects.create(
                     booking=booking,
                     amount=booking.total_amount,
-                    transaction_id=session.get('payment_intent'),
+                    transaction_id=getattr(session, 'payment_intent', None),
                     payment_method='Stripe',
                     status='COMPLETED'
-
                 )
             except Booking.DoesNotExist:
                 pass
