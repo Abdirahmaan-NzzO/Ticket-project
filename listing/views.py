@@ -12,7 +12,7 @@ def trip_search_view(request):
     operator_filter = request.GET.getlist('operator_filter') # e.g. ['1', '3']
     sort_by = request.GET.get('sort_by', 'departure_time')
 
-    trips = Trip.objects.filter(departure_time__gte=timezone.now())
+    trips = Trip.objects.filter(departure_time__gte=timezone.now()).exclude(status__in=['STARTED', 'COMPLETED'])
 
     if origin:
         trips = trips.filter(route__origin__icontains=origin)
