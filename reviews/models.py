@@ -15,9 +15,13 @@ class Review(models.Model):
     driver = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name='reviews')
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='reviews')
     
-    rating = models.PositiveIntegerField(choices=RATING_CHOICES)
+    rating = models.PositiveIntegerField(choices=RATING_CHOICES, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+    bus_rating = models.PositiveIntegerField(choices=RATING_CHOICES, default=5)
+    bus_comment = models.TextField(blank=True, null=True)
+    driver_rating = models.PositiveIntegerField(choices=RATING_CHOICES, default=5)
+    driver_comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Review for Booking #{self.booking.id} - {self.rating} Stars"
+        return f"Review for Booking #{self.booking.id} - {self.rating or self.bus_rating} Stars"
