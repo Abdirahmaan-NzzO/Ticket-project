@@ -10,7 +10,7 @@ from datetime import timedelta
 from .decorators import admin_required
 from .forms import (
     TripForm, RouteForm, BusForm, BusOperatorForm, 
-    DriverProfileForm, DriverNotificationForm
+    DriverProfileForm, DriverNotificationForm, UserAdminForm
 )
 from booking.models import Booking, Passenger
 from listing.models import Trip, Route, Bus, BusOperator, Seat, Amenity
@@ -528,3 +528,47 @@ def review_delete(request, pk):
     review.delete()
     messages.success(request, "Customer review deleted (moderated) successfully.")
     return redirect('system_admin:reviews_list')
+
+@login_required
+@admin_required
+def user_detail(request, pk):
+    member = get_object_or_404(User.objects.select_related('profile'), pk=pk)
+    bookings = member.bookings.select_related('trip__route').all().order_by('-booking_time')
+    context = {
+        'member': member,
+        'bookings': bookings,
+        'active_tab': 'users',
+    }
+    return render(request, 'system_admin/user_detail.html', context)
+
+@login_required
+@admin_required
+def user_edit(request, pk):
+    member = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = UserAdminForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"User {member.username} was successfully updated.")
+            return redirect('system_admin:user_detail', pk=member.pk)
+    else:
+        form = UserAdminForm(instance=member)
+    
+    context = {
+        'form': form,
+        'active_tab': 'users',
+    }
+    return render(request, 'system_admin/user_form.html', context)
+
+@login_required
+@admin_required
+@require_POST
+def user_delete(request, pk):
+    member = get_object_or_404(User, pk=pk)
+    if member == request.user:
+        messages.error(request, "You cannot delete your own account!")
+    else:
+        username = member.username
+        member.delete()
+        messages.success(request, f"User {username} has been permanently deleted.")
+    return redirect('system_admin:users_list')

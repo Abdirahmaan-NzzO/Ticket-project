@@ -71,3 +71,39 @@ class DriverNotificationForm(forms.ModelForm):
                 })
             else:
                 field.widget.attrs.update({'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200'})
+
+class UserAdminForm(BaseAdminForm):
+    role = forms.ChoiceField(
+        choices=(
+            ('ADMIN', 'Admin'),
+            ('DRIVER', 'Driver'),
+            ('PASSENGER', 'Passenger'),
+        ),
+        required=True
+    )
+    phone_number = forms.CharField(required=False)
+    address = forms.CharField(widget=forms.Textarea(attrs={'rows': 2}), required=False)
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            from accounts.models import UserProfile
+            profile, _ = UserProfile.objects.get_or_create(user=self.instance)
+            self.fields['role'].initial = profile.role
+            self.fields['phone_number'].initial = profile.phone_number
+            self.fields['address'].initial = profile.address
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit:
+            from accounts.models import UserProfile
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.role = self.cleaned_data['role']
+            profile.phone_number = self.cleaned_data.get('phone_number', '')
+            profile.address = self.cleaned_data.get('address', '')
+            profile.save()
+        return user
