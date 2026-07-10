@@ -135,6 +135,20 @@ def booking_status_update(request, pk, status):
         messages.error(request, "Invalid booking status change.")
     return redirect(request.META.get('HTTP_REFERER', 'system_admin:bookings_list'))
 
+# --- Trip Detail View ---
+
+@login_required
+@admin_required
+def trip_detail(request, pk):
+    trip = get_object_or_404(Trip.objects.select_related('bus__operator', 'bus__driver__user', 'route'), pk=pk)
+    bookings = Booking.objects.filter(trip=trip).select_related('user').order_by('-booking_time')
+    context = {
+        'trip': trip,
+        'bookings': bookings,
+        'active_tab': 'trips',
+    }
+    return render(request, 'system_admin/trip_detail.html', context)
+
 # --- Trips & Routes Views ---
 
 @login_required
@@ -216,7 +230,30 @@ def route_create(request):
             return redirect('system_admin:trips_list')
     else:
         form = RouteForm()
-    return render(request, 'system_admin/route_form.html', {'form': form})
+    return render(request, 'system_admin/route_form.html', {'form': form, 'title': 'Add New Route'})
+
+@login_required
+@admin_required
+def route_edit(request, pk):
+    route = get_object_or_404(Route, pk=pk)
+    if request.method == 'POST':
+        form = RouteForm(request.POST, instance=route)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Route {route} updated successfully!")
+            return redirect('system_admin:trips_list')
+    else:
+        form = RouteForm(instance=route)
+    return render(request, 'system_admin/route_form.html', {'form': form, 'title': 'Edit Route', 'route': route})
+
+@login_required
+@admin_required
+@require_POST
+def route_delete(request, pk):
+    route = get_object_or_404(Route, pk=pk)
+    route.delete()
+    messages.success(request, "Route deleted successfully.")
+    return redirect('system_admin:trips_list')
 
 # --- Buses & Operators Views ---
 
@@ -435,6 +472,18 @@ def payment_status_update(request, pk, status):
     else:
         messages.error(request, "Invalid payment status change.")
     return redirect(request.META.get('HTTP_REFERER', 'system_admin:payments_list'))
+
+# --- Payment Detail View ---
+
+@login_required
+@admin_required
+def payment_detail(request, pk):
+    payment = get_object_or_404(Payment.objects.select_related('booking__user', 'booking__trip__route', 'booking__trip__bus__operator'), pk=pk)
+    context = {
+        'payment': payment,
+        'active_tab': 'payments',
+    }
+    return render(request, 'system_admin/payment_detail.html', context)
 
 # --- User Management Views ---
 

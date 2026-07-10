@@ -20,6 +20,14 @@ urlpatterns = [
     
     # Routes
     path('routes/new/', views.route_create, name='route_create'),
+    path('routes/<int:pk>/edit/', views.route_edit, name='route_edit'),
+    path('routes/<int:pk>/delete/', views.route_delete, name='route_delete'),
+
+    # Trips detail
+    path('trips/<int:pk>/', views.trip_detail, name='trip_detail'),
+
+    # Payment detail
+    path('payments/<int:pk>/', views.payment_detail, name='payment_detail'),
     
     # Buses
     path('buses/', views.buses_list, name='buses_list'),

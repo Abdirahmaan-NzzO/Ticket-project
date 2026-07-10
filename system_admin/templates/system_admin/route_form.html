@@ -1,45 +1,61 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Route - Admin{% endblock %}
+{% block title %}{{ title }} - Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto my-8 px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto my-6 px-4 sm:px-6 lg:px-8">
 
-    <div class="mb-6 flex items-center gap-3">
-        <a href="{% url 'system_admin:trips_list' %}" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-blue-600 hover:border-blue-600 hover:shadow-md transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        </a>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-5 mb-8">
         <div>
-            <h1 class="text-2xl font-black text-gray-900">Add New Route</h1>
-            <p class="text-sm text-gray-500">Define a new origin-destination connection.</p>
+            <h1 class="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <span class="w-2.5 h-8 bg-blue-600 rounded-full"></span>
+                Admin Dashboard
+            </h1>
+            <p class="text-gray-500 font-medium text-sm mt-1">Trips &amp; Routes Management</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a href="{% url 'system_admin:trips_list' %}" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-xl hover:bg-gray-50 shadow-sm transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Trips
+            </a>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-8">
-        <form method="POST">
-            {% csrf_token %}
-            <div class="space-y-5">
-                {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-1.5">
-                        {{ field.label }}
-                        {% if field.field.required %}<span class="text-red-500 ml-0.5">*</span>{% endif %}
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <p class="mt-1.5 text-xs text-red-600 font-semibold">{{ field.errors|join:", " }}</p>
-                    {% endif %}
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {% with active_tab='trips' %}{% include 'system_admin/_admin_sidebar.html' %}{% endwith %}
+
+        <div class="lg:col-span-3">
+            <div class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900">{{ title }}</h2>
+                    <p class="text-sm text-gray-500 mt-1">Define an origin-destination route connection.</p>
                 </div>
-                {% endfor %}
+                <div class="p-6 sm:p-8">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {% for field in form %}
+                            <div>
+                                <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-1.5">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-red-500 ml-0.5">*</span>{% endif %}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}<p class="mt-1.5 text-xs text-red-600 font-semibold">{{ field.errors|join:", " }}</p>{% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="flex items-center gap-4 mt-8 pt-6 border-t border-gray-100">
+                            <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition hover:-translate-y-0.5 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {% if route %}Update Route{% else %}Create Route{% endif %}
+                            </button>
+                            <a href="{% url 'system_admin:trips_list' %}" class="px-5 py-3 border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition text-sm">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="flex items-center gap-4 mt-8 pt-6 border-t border-gray-100">
-                <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition hover:-translate-y-0.5 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Create Route
-                </button>
-                <a href="{% url 'system_admin:trips_list' %}" class="px-5 py-3 border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition text-sm">Cancel</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}
