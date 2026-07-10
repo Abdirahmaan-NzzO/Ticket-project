@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Trip Detail - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto my-6 px-4 sm:px-6 lg:px-8">
+
+    <!-- Top Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-5 mb-8">
+        <div>
+            <h1 class="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <span class="w-2.5 h-8 bg-blue-600 rounded-full"></span>
+                Admin Dashboard
+            </h1>
+            <p class="text-gray-500 font-medium text-sm mt-1">Trips &amp; Routes Management</p>
+        </div>
+        <div class="mt-4 md:mt-0 flex gap-3">
+            <a href="{% url 'system_admin:trip_edit' trip.id %}" class="px-5 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 shadow-md transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                Edit Trip
+            </a>
+            <a href="{% url 'system_admin:trips_list' %}" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-xl hover:bg-gray-50 shadow-sm transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Trips
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- Sidebar -->
+        {% with active_tab='trips' %}{% include 'system_admin/_admin_sidebar.html' %}{% endwith %}
+
+        <!-- Main Content -->
+        <div class="lg:col-span-3 space-y-6">
+
+            <!-- Trip Summary Header -->
+            <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5 pb-4 border-b border-gray-100">
+                    <div>
+                        <h2 class="text-2xl font-black text-blue-600">{{ trip.route }}</h2>
+                        <p class="text-sm text-gray-500 mt-1">Trip ID #{{ trip.id }}</p>
+                    </div>
+                    <span class="inline-block text-sm font-black uppercase px-4 py-2 rounded-full
+                    {% if trip.status == 'SCHEDULED' %}bg-blue-50 text-blue-700 border border-blue-200
+                    {% elif trip.status == 'STARTED' %}bg-green-50 text-green-700 border border-green-200
+                    {% elif trip.status == 'DELAYED' %}bg-amber-50 text-amber-700 border border-amber-200
+                    {% elif trip.status == 'COMPLETED' %}bg-gray-100 text-gray-700 border border-gray-200
+                    {% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+                        {{ trip.status }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Departure</p>
+                        <p class="font-bold text-gray-900 mt-1 text-sm">{{ trip.departure_time|date:"D, d M Y" }}</p>
+                        <p class="text-xs text-gray-500">{{ trip.departure_time|date:"H:i" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Arrival</p>
+                        <p class="font-bold text-gray-900 mt-1 text-sm">{{ trip.arrival_time|date:"D, d M Y" }}</p>
+                        <p class="text-xs text-gray-500">{{ trip.arrival_time|date:"H:i" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Ticket Price</p>
+                        <p class="font-black text-blue-600 mt-1 text-xl">${{ trip.price }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Bookings</p>
+                        <p class="font-black text-gray-900 mt-1 text-xl">{{ bookings.count }}</p>
+                    </div>
+                </div>
+
+                {% if trip.delay_minutes > 0 %}
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div>
+                        <p class="text-sm font-bold text-amber-800">Delayed by {{ trip.delay_minutes }} minutes</p>
+                        <p class="text-xs text-amber-700 mt-0.5 italic">"{{ trip.delay_reason }}"</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Bus & Driver Info -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-6">
+                    <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">Assigned Bus</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Registration</p>
+                            <p class="font-black text-blue-600 mt-1">{{ trip.bus.registration_number }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Operator</p>
+                            <p class="font-bold text-gray-900 mt-1">{{ trip.bus.operator.name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Type / Capacity</p>
+                            <p class="font-bold text-gray-700 mt-1">{{ trip.bus.bus_type }} &bull; {{ trip.bus.capacity }} seats</p>
+                        </div>
+                        <div class="pt-2">
+                            <a href="{% url 'system_admin:bus_edit' trip.bus.id %}" class="text-xs font-bold text-blue-600 hover:underline">Edit Bus &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-6">
+                    <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">Assigned Driver</h3>
+                    {% if trip.bus.driver %}
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            {% if trip.bus.driver.photo %}
+                            <img src="{{ trip.bus.driver.photo.url }}" class="w-12 h-12 rounded-full object-cover shadow-sm">
+                            {% else %}
+                            <div class="w-12 h-12 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg uppercase">
+                                {{ trip.bus.driver.user.username|make_list|first }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <p class="font-bold text-gray-900">{{ trip.bus.driver.user.get_full_name|default:trip.bus.driver.user.username }}</p>
+                                <p class="text-xs text-gray-500">@{{ trip.bus.driver.user.username }}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">License</p>
+                            <p class="font-bold text-gray-900 mt-1">{{ trip.bus.driver.license_number }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Status</p>
+                            <span class="inline-block mt-1 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full
+                            {% if trip.bus.driver.status == 'ACTIVE' %}bg-green-50 text-green-700 border border-green-200
+                            {% elif trip.bus.driver.status == 'ON_TRIP' %}bg-blue-50 text-blue-700 border border-blue-200
+                            {% else %}bg-gray-100 text-gray-500 border border-gray-200{% endif %}">
+                                {{ trip.bus.driver.status }}
+                            </span>
+                        </div>
+                        <div class="pt-2">
+                            <a href="{% url 'system_admin:driver_edit' trip.bus.driver.id %}" class="text-xs font-bold text-blue-600 hover:underline">Edit Driver &rarr;</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-400 italic text-sm py-4">No driver assigned to this bus.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bookings on this Trip -->
+            <div class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900">Bookings on this Trip ({{ bookings.count }})</h3>
+                </div>
+                {% if bookings %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-left">
+                        <thead class="bg-gray-50 text-xs text-gray-500 uppercase font-black tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4">ID</th>
+                                <th class="px-6 py-4">Customer</th>
+                                <th class="px-6 py-4">Amount</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Booked On</th>
+                                <th class="px-6 py-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-150 text-sm font-medium text-gray-900">
+                            {% for booking in bookings %}
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="px-6 py-4 font-bold text-gray-600">#{{ booking.id }}</td>
+                                <td class="px-6 py-4">
+                                    <div class="font-bold">{{ booking.user.username }}</div>
+                                    <div class="text-xs text-gray-500">{{ booking.user.email }}</div>
+                                </td>
+                                <td class="px-6 py-4 font-black text-gray-900">${{ booking.total_amount }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-block text-[10px] font-black uppercase px-2.5 py-1 rounded-full
+                                    {% if booking.status == 'CONFIRMED' %}bg-green-50 text-green-700 border border-green-200
+                                    {% elif booking.status == 'PENDING' %}bg-amber-50 text-amber-700 border border-amber-200
+                                    {% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+                                        {{ booking.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-500">{{ booking.booking_time|date:"Y-m-d H:i" }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{% url 'system_admin:booking_detail' booking.id %}" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-10 text-center text-gray-500 italic">No bookings made for this trip yet.</div>
+                {% endif %}
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
+                <h3 class="text-base font-bold text-red-800 mb-2">Danger Zone</h3>
+                <p class="text-sm text-red-700 mb-4">Deleting this trip is permanent and will affect all linked bookings.</p>
+                <form method="POST" action="{% url 'system_admin:trip_delete' trip.id %}" onsubmit="return confirm('Permanently delete this trip? All linked bookings may be affected.');">
+                    {% csrf_token %}
+                    <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition shadow-sm">Delete This Trip</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

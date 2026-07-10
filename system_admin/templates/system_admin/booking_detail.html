@@ -1,22 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}Booking #{{ booking.id }} Detail - Admin{% endblock %}
+{% block title %}Booking #{{ booking.id }} Detail - Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto my-8 px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto my-6 px-4 sm:px-6 lg:px-8">
 
-    <!-- Back -->
-    <div class="mb-6 flex items-center gap-3">
-        <a href="{% url 'system_admin:bookings_list' %}" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-blue-600 hover:border-blue-600 hover:shadow-md transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        </a>
+    <!-- Top Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-5 mb-8">
         <div>
-            <h1 class="text-2xl font-black text-gray-900">Booking <span class="text-blue-600">#{{ booking.id }}</span> Details</h1>
-            <p class="text-sm text-gray-500">Placed on {{ booking.booking_time|date:"D, d M Y · H:i" }}</p>
+            <h1 class="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <span class="w-2.5 h-8 bg-blue-600 rounded-full"></span>
+                Admin Dashboard
+            </h1>
+            <p class="text-gray-500 font-medium text-sm mt-1">Bookings Management</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a href="{% url 'system_admin:bookings_list' %}" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-xl hover:bg-gray-50 shadow-sm transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Bookings
+            </a>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- Sidebar -->
+        {% with active_tab='bookings' %}{% include 'system_admin/_admin_sidebar.html' %}{% endwith %}
+
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+            <!-- Page Title -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-black text-gray-900">Booking <span class="text-blue-600">#{{ booking.id }}</span> Details</h2>
+                <p class="text-sm text-gray-500 mt-1">Placed on {{ booking.booking_time|date:"D, d M Y &middot; H:i" }}</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
 
         <!-- Left: Booking Info -->
         <div class="lg:col-span-2 space-y-6">
@@ -193,6 +212,9 @@
                 {% endif %}
             </div>
         </div>
-    </div>
+        </div>{# closes lg:grid-cols-3 inner grid #}
+        </div>{# closes lg:col-span-3 #}
+    </div>{# closes lg:grid-cols-4 outer grid #}
 </div>
 {% endblock %}
+
