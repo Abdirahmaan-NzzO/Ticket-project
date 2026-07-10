@@ -36,7 +36,13 @@ def register_view(request):
                 'token': default_token_generator.make_token(user),
             })
             # Send email (console in development)
-            send_mail(subject, message, 'ticketssafar@gmail.com', [user.email])
+            try:
+                send_mail(subject, message, 'ticketssafar@gmail.com', [user.email])
+            except Exception as e:
+                # If email sending fails, delete the user to prevent them from being stuck in inactive state
+                user.delete()
+                messages.error(request, f"Failed to send verification email. Your account has not been created. Error: {str(e)}")
+                return render(request, 'accounts/register.html', {'form': form})
             
             return render(request, 'accounts/registration_pending.html')
     else:
